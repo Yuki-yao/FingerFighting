@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour {
     }
     else if (at == ActionType.Jump)
     {
-      Debug.Log("Jump");
       animator.SetTrigger("jump");
       animator.SetBool("isIdle", false);
       Vector2 upforce = new Vector2(0, 1300);
@@ -64,10 +63,19 @@ public class PlayerController : MonoBehaviour {
       animator.SetTrigger("punch");
       animator.SetBool("isIdle", false);
     }
+    else if (at == ActionType.Kick)
+    {
+      animator.SetTrigger("kick");
+      animator.SetBool("isIdle", false);
+    }
+    else if (at == ActionType.Defend)
+    {
+      animator.SetTrigger("defend");
+      animator.SetBool("isIdle", false);
+    }
     else
     {
       animator.SetBool("isIdle", true);
-      Debug.Log("idle");
     }
   }
 
