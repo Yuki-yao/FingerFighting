@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
   private Rigidbody2D body;
+  private SpriteRenderer sRenderer;
+  public GameObject shadow;
   private IFingerInput input;
   private Animator animator;
   private float groundY;
@@ -15,6 +17,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
+    sRenderer = shadow.GetComponent<SpriteRenderer>();
     input = new KeyboardInput();
     groundY = body.position.y;
 	}
@@ -23,7 +26,12 @@ public class PlayerController : MonoBehaviour {
     Vector2 pos = body.position;
     ActionType at = input.GetAction();
     if (pos.y > groundY)
+    {
+      sRenderer.enabled = true;
       return;
+    }
+    sRenderer.enabled = false;
+
     if (at == ActionType.Forward)
     {
       animator.SetTrigger("forward");
