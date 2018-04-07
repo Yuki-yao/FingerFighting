@@ -5,20 +5,40 @@ using Leap.Unity;
 
 public class KeyboardInput : IFingerInput{
   public int[] lasTime;
-  public KeyCode[] keys =
-  {
-    KeyCode.None,
-    KeyCode.LeftShift,
-    KeyCode.W,
-    KeyCode.A,
-    KeyCode.J,
-    KeyCode.D,
-    KeyCode.S,
-    KeyCode.K
-  };
+  public KeyCode[] keys;
+  private int player;
 
-  public KeyboardInput()
+  public KeyboardInput(int player)
   {
+    this.player = player;
+    if(player == 1)
+    {
+      keys = new KeyCode[8]
+      {
+        KeyCode.None,
+        KeyCode.LeftShift,
+        KeyCode.W,
+        KeyCode.A,
+        KeyCode.J,
+        KeyCode.D,
+        KeyCode.S,
+        KeyCode.K
+      };
+    }
+    else
+    {
+      keys = new KeyCode[8]
+      {
+        KeyCode.None,
+        KeyCode.RightShift,
+        KeyCode.UpArrow,
+        KeyCode.LeftArrow,
+        KeyCode.Minus,
+        KeyCode.RightArrow,
+        KeyCode.DownArrow,
+        KeyCode.Equals
+      };
+    }
     lasTime = new int[8];
     for(int i = 0; i < lasTime.Length; i ++)
     {

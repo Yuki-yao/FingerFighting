@@ -19,7 +19,16 @@ public class PlayerController : MonoBehaviour {
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
     sRenderer = shadow.GetComponent<SpriteRenderer>();
-    input = new HandInput();
+    if(this.name == "Player1")
+    {
+      input = new KeyboardInput(1);
+      //Debug.Log("k1");
+    }
+    else
+    {
+      input = new KeyboardInput(2);
+      //Debug.Log("k2");
+    }
     input.SetHandController(GameObject.Find("LeapHandController").GetComponent<LeapHandController>());
     groundY = body.position.y;
 	}
