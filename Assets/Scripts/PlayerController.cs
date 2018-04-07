@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FingerInput;
 using UnityEngine;
+using Leap.Unity;
 
 public class PlayerController : MonoBehaviour {
 
@@ -18,7 +19,8 @@ public class PlayerController : MonoBehaviour {
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
     sRenderer = shadow.GetComponent<SpriteRenderer>();
-    input = new KeyboardInput();
+    input = new HandInput();
+    input.SetHandController(GameObject.Find("LeapHandController").GetComponent<LeapHandController>());
     groundY = body.position.y;
 	}
 

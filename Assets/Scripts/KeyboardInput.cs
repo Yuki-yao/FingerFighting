@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using FingerInput;
+using Leap.Unity;
 
 public class KeyboardInput : IFingerInput{
   public int[] lasTime;
@@ -47,5 +48,10 @@ public class KeyboardInput : IFingerInput{
     }
     lasTime[0] = System.Environment.TickCount;
     return ActionType.Null;
+  }
+
+  public void SetHandController(LeapHandController hc)
+  {
+
   }
 }
