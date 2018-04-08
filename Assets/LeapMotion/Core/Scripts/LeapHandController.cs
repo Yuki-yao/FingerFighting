@@ -23,10 +23,13 @@ namespace Leap.Unity
     protected LeapProvider provider;
 
     private const int TYPES = 8;
-    private List<List<double>> count = new List<List<double>>();
-    private List<double> totalCount = new List<double>();
+    private List<List<double>> lcount = new List<List<double>>();
+    private List<List<double>> rcount = new List<List<double>>();
+    private List<double> ltotalCount = new List<double>();
+    private List<double> rtotalCount = new List<double>();
 
-    private ActionType action;
+    private ActionType laction;
+    private ActionType raction;
 
     protected virtual void OnEnable()
     {
@@ -35,12 +38,15 @@ namespace Leap.Unity
       provider.OnUpdateFrame += OnUpdateFrame;
       provider.OnFixedFrame += OnFixedFrame;
 
-      action = ActionType.Null;
+      laction = ActionType.Null;
+      raction = ActionType.Null;
 
       for (int i = 0; i < TYPES; i++)
       {
-        List<double> newList = new List<double>();
-        count.Add(newList);
+        List<double> lnewList = new List<double>();
+        lcount.Add(lnewList);
+        List<double> rnewList = new List<double>();
+        rcount.Add(rnewList);
       }
     }
 
@@ -61,14 +67,20 @@ namespace Leap.Unity
         //Update label text.
         if (frame.Hands.Count > 0)
         {
-          Hand curHand = frame.Hands[0];
-          if (curHand.IsLeft)
-            return;
-          UpdateGesture(curHand);
+          Hand curHand;
+          for(int i = 0; i < frame.Hands.Count; i ++)
+          {
+            curHand = frame.Hands[i];
+            if (curHand.IsLeft)
+              UpdateGesture(curHand, true);
+            else
+              UpdateGesture(curHand, false);
+          }
         }
         else
         {
-          action = ActionType.Null;
+          laction = ActionType.Null;
+          raction = ActionType.Null;
         }
       }
     }
@@ -209,13 +221,20 @@ namespace Leap.Unity
       return false;
     }
 
-    private const double TIME_TH = 1000;  //1000ms
-    private double tot = 0;
+    private const double TIME_TH = 2000;  //1000ms
+    private double ltot = 0;
+    private double rtot = 0;
     private const double lambda = 0.1;
-    private int prevType = -1;
+    private int lprevType = -1;
+    private int rprevType = -1;
 
-    private bool checkInvert(List<double> a, List<double> b)
+    private bool checkInvert(List<double> a, List<double> b, bool isLeftHand)
     {
+      double tot;
+      if (isLeftHand)
+        tot = ltot;
+      else
+        tot = rtot;
       int curTot = 0;
       for (int i = 0; i < a.Count; i++)
         for (int j = 0; j < b.Count; j++)
@@ -224,14 +243,30 @@ namespace Leap.Unity
             curTot++;
         }
       tot = tot * (1 - lambda) + curTot * lambda;
+      if (isLeftHand)
+        ltot = tot;
+      else
+        rtot = tot;
       if (a.Count * b.Count * 0.25 < tot && tot < a.Count * b.Count * 0.75)
         return true;
-      Debug.Log(string.Format("curTot:{0}, tot:{1} a*b:{2}", curTot, tot, a.Count * b.Count));
+      //Debug.Log(string.Format("curTot:{0}, tot:{1} a*b:{2}", curTot, tot, a.Count * b.Count));
       return false;
     }
 
-    private bool check(GestureType at)
+    private bool check(GestureType at, bool isLeftHand)
     {
+      List<List<double>> count;
+      List<double> totalCount;
+      if(isLeftHand)
+      {
+        count = lcount;
+        totalCount = ltotalCount;
+      }
+      else
+      {
+        count = rcount;
+        totalCount = rtotalCount;
+      }
       double curTime = System.Environment.TickCount;
       count[(int)at].Add(curTime);
       for (int i = 0; i < totalCount.Count; i++)
@@ -265,7 +300,7 @@ namespace Leap.Unity
         if (thisAct + anotherAct > totalCount.Count * 0.4 &&
           thisAct > (thisAct + anotherAct) * 0.25 &&
           thisAct < (thisAct + anotherAct) * 0.75 &&
-          checkInvert(count[(int)at], count[(int)at ^ 1]))
+          checkInvert(count[(int)at], count[(int)at ^ 1], isLeftHand))
           return true;
       }
       else
@@ -277,8 +312,23 @@ namespace Leap.Unity
       return false;
     }
 
-    private bool checkForward()
+    private bool checkForward(bool isLeftHand)
     {
+      List<List<double>> count;
+      List<double> totalCount;
+      int prevType;
+      if (isLeftHand)
+      {
+        count = lcount;
+        totalCount = ltotalCount;
+        prevType = lprevType;
+      }
+      else
+      {
+        count = rcount;
+        totalCount = rtotalCount;
+        prevType = rprevType;
+      }
       double curTime = System.Environment.TickCount;
       for (int i = 0; i < totalCount.Count; i++)
       {
@@ -308,22 +358,38 @@ namespace Leap.Unity
       if (thisAct + anotherAct > totalCount.Count * 0.4 &&
         thisAct > (thisAct + anotherAct) * 0.25 &&
         thisAct < (thisAct + anotherAct) * 0.75 &&
-        checkInvert(count[(int)GestureType.ForwardL], count[(int)GestureType.ForwardR]))
+        checkInvert(count[(int)GestureType.ForwardL], count[(int)GestureType.ForwardR], isLeftHand))
         return true;
       return false;
     }
 
-    private void UpdateGesture(Hand hand)
+    private void UpdateGesture(Hand hand, bool isLeftHand)
     {
+      List<double> totalCount;
+      int prevType;
+      ActionType action;
+      if (isLeftHand)
+      {
+        totalCount = ltotalCount;
+        prevType = lprevType;
+        action = laction;
+      }
+      else
+      {
+        Debug.Log("Right"+ System.Environment.TickCount);
+        totalCount = rtotalCount;
+        prevType = rprevType;
+        action = raction;
+      }
       action = ActionType.Null;
       double curTime = System.Environment.TickCount;
       totalCount.Add(curTime);
       if (isDefend(hand))
       {
-        if (check(GestureType.Defend))
+        if (check(GestureType.Defend, isLeftHand))
         {
           //Debug.Log("DEFEND");
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -332,6 +398,10 @@ namespace Leap.Unity
             prevType = (int)GestureType.Defend;
             action = ActionType.Defend;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
@@ -339,9 +409,9 @@ namespace Leap.Unity
       if (isJump(hand))
       {
         Debug.Log("JUMP");
-        if (check(GestureType.Jump))
+        if (check(GestureType.Jump, isLeftHand))
         {
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -350,15 +420,19 @@ namespace Leap.Unity
             prevType = (int)GestureType.Jump;
             action = ActionType.Jump;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isSquat(hand))
       {
-        if (check(GestureType.Squat))
+        if (check(GestureType.Squat, isLeftHand))
         {
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -367,15 +441,19 @@ namespace Leap.Unity
             prevType = (int)GestureType.Squat;
             action = ActionType.Squat;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isKick(hand))
       {
-        if (check(GestureType.Kick))
+        if (check(GestureType.Kick, isLeftHand))
         {
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -384,15 +462,19 @@ namespace Leap.Unity
             prevType = (int)GestureType.Kick;
             action = ActionType.Kick;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isBackward(hand))
       {
-        if (check(GestureType.Backward))
+        if (check(GestureType.Backward, isLeftHand))
         {
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -401,15 +483,19 @@ namespace Leap.Unity
             prevType = (int)GestureType.Backward;
             action = ActionType.Backward;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isPunch(hand))
       {
-        if (check(GestureType.Punch))
+        if (check(GestureType.Punch, isLeftHand))
         {
-          if (checkForward())
+          if (checkForward(isLeftHand))
           {
             action = ActionType.Forward;
           }
@@ -418,40 +504,62 @@ namespace Leap.Unity
             prevType = (int)GestureType.Punch;
             action = ActionType.Punch;
           }
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isForwardL(hand))
       {
-        if (check(GestureType.ForwardL))
+        if (check(GestureType.ForwardL, isLeftHand))
         {
           prevType = (int)GestureType.ForwardL;
           action = ActionType.Forward;
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
       if (isForwardR(hand))
       {
-        if (check(GestureType.ForwardR))
+        if (check(GestureType.ForwardR, isLeftHand))
         {
           prevType = (int)GestureType.ForwardR;
           action = ActionType.Forward;
+          if (isLeftHand)
+            laction = action;
+          else
+            raction = action;
           return;
         }
       }
 
-      if (checkForward())
+      if (checkForward(isLeftHand))
       {
         action = ActionType.Forward;
       }
+      if (isLeftHand)
+        laction = action;
+      else
+        raction = action;
       return;
     }
 
-    public ActionType GetAction()
+    public ActionType GetAction(int player)
     {
-      return action;
+      if (player == 1)
+        return laction;
+      else
+      {
+        Debug.Log("              " + raction);
+        return raction;
+      }
     }
   }
 }

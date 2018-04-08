@@ -348,8 +348,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 595965071}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.44, y: -0.18, z: 0}
-  m_LocalScale: {x: 0.21754248, y: 0.20987795, z: 0.20844942}
+  m_LocalPosition: {x: 4.117, y: -0.53, z: 0}
+  m_LocalScale: {x: 0.19151708, y: 0.1847695, z: 0.18351187}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -399,6 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shadow: {fileID: 214801853}
   speed: 0.1
+  isHandInput: 1
 --- !u!50 &761949591
 Rigidbody2D:
   serializedVersion: 4
@@ -596,6 +597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shadow: {fileID: 595965071}
   speed: 0.1
+  isHandInput: 1
 --- !u!212 &1246265834
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -647,8 +649,8 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1246265830}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.44, y: -0.18, z: 0}
-  m_LocalScale: {x: 0.21754248, y: 0.20987795, z: 0.20844942}
+  m_LocalPosition: {x: 4.117, y: -0.53, z: 0}
+  m_LocalScale: {x: 0.19151708, y: 0.1847695, z: 0.18351187}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
