@@ -13,21 +13,29 @@ public class PlayerController : MonoBehaviour {
   private Animator animator;
   private float groundY;
   public float speed;
+  public bool isHandInput;
 
 	// Use this for initialization
 	void Start () {
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
     sRenderer = shadow.GetComponent<SpriteRenderer>();
+    int player = 0;
     if(this.name == "Player1")
     {
-      input = new KeyboardInput(1);
-      //Debug.Log("k1");
+      player = 1;
     }
     else
     {
-      input = new KeyboardInput(2);
-      //Debug.Log("k2");
+      player = 2;
+    }
+    if(isHandInput)
+    {
+      input = new HandInput(player);
+    }
+    else
+    {
+      input = new KeyboardInput(player);
     }
     input.SetHandController(GameObject.Find("LeapHandController").GetComponent<LeapHandController>());
     groundY = body.position.y;

@@ -8,6 +8,11 @@ public class HandInput : IFingerInput {
 
   public LeapHandController handController;
 
+  public HandInput(int player)
+  {
+
+  }
+
   public ActionType GetAction()
   {
     return handController.GetAction();
