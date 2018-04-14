@@ -32,9 +32,9 @@ public class KeyboardInput : IFingerInput{
         KeyCode.None,
         KeyCode.RightShift,
         KeyCode.UpArrow,
-        KeyCode.LeftArrow,
-        KeyCode.Minus,
         KeyCode.RightArrow,
+        KeyCode.Minus,
+        KeyCode.LeftArrow,
         KeyCode.DownArrow,
         KeyCode.Equals
       };

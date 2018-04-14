@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour {
   public float speed;
   public bool isHandInput;
   private ActionType curAction;
+  private int player;
 
 	// Use this for initialization
 	void Start () {
@@ -23,7 +24,6 @@ public class PlayerController : MonoBehaviour {
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
     sRenderer = shadow.GetComponent<SpriteRenderer>();
-    int player = 0;
     if(this.name == "Player1")
     {
       player = 1;
@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour {
     else
     {
       player = 2;
+      speed = -speed;
     }
     if(isHandInput)
     {
@@ -56,6 +57,8 @@ public class PlayerController : MonoBehaviour {
     ActionType at = input.GetAction();
     if (OnAir())
     {
+      if (player == 1)
+        Debug.Log(System.Environment.TickCount);
       sRenderer.enabled = true;
       return;
     }
@@ -70,7 +73,7 @@ public class PlayerController : MonoBehaviour {
     }
     else if (at == ActionType.Backward)
     {
-      Debug.Log("Backward");
+      animator.ResetTrigger("backward");
       animator.SetTrigger("backward");
       animator.SetBool("isIdle", false);
       Vector2 newpos = new Vector2(pos.x - speed, pos.y);
@@ -121,7 +124,7 @@ public class PlayerController : MonoBehaviour {
 
   public bool OnAir()
   {
-    if (body.position.y > groundY)
+    if (body.position.y > groundY + 1e-4)
       return true;
     return false;
   }
