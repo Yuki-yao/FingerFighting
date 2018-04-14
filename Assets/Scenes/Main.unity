@@ -398,6 +398,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shadow: {fileID: 214801853}
+  otherPlayer: {fileID: 1246265830}
   speed: 0.1
   isHandInput: 0
 --- !u!50 &761949591
@@ -596,6 +597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shadow: {fileID: 595965071}
+  otherPlayer: {fileID: 761949589}
   speed: 0.1
   isHandInput: 0
 --- !u!212 &1246265834

@@ -9,14 +9,17 @@ public class PlayerController : MonoBehaviour {
   private Rigidbody2D body;
   private SpriteRenderer sRenderer;
   public GameObject shadow;
+  public GameObject otherPlayer;
   private IFingerInput input;
   private Animator animator;
   private float groundY;
   public float speed;
   public bool isHandInput;
+  private ActionType curAction;
 
 	// Use this for initialization
 	void Start () {
+    curAction = ActionType.Null;
     body = GetComponent<Rigidbody2D>();
     animator = GetComponent<Animator>();
     sRenderer = shadow.GetComponent<SpriteRenderer>();
@@ -41,10 +44,17 @@ public class PlayerController : MonoBehaviour {
     groundY = body.position.y;
 	}
 
+  private void OnCollisionStay2D(Collision2D collision)
+  {
+    Collider2D col = collision.collider;
+    if (col.name == otherPlayer.name)
+      checkAttack();
+  }
+
   void FixedUpdate() {
     Vector2 pos = body.position;
     ActionType at = input.GetAction();
-    if (pos.y > groundY)
+    if (OnAir())
     {
       sRenderer.enabled = true;
       return;
@@ -97,19 +107,40 @@ public class PlayerController : MonoBehaviour {
     {
       animator.SetBool("isIdle", true);
     }
-    checkAttack(at);
+    curAction = at;
   }
 
   // Update is called once per frame
   void Update () {
 	}
 
-  void checkAttack(ActionType at)
+  public ActionType GetCurrentAction()
+  {
+    return curAction;
+  }
+
+  public bool OnAir()
+  {
+    if (body.position.y > groundY)
+      return true;
+    return false;
+  }
+
+  void checkAttack()
   {
     // TODO: 
     // if (player1 and player2 collide and not on air)
-    //   if (player1 punch and player2 not (defend or squat))
-    //   or player1 kick
+    //   if ((player1 punch and player2 not (defend or squat)) or player1 kick)
     // player2 hp decreased
+    // if player2's hp == 0
+    //   player2 die
+    //
+    // HINT:
+    // use OnAir() to check if player is on air
+    // use otherPlayer to access another player Gameobject
+    // use curAction to access this player's action
+    // use otherPlayer.GetCurrentAction() to access another player's action
+    // you can access health bar like "GameObject.Find("YOUR_HEALTH_BAR_NAME") or declare your own variables
+    //   e.g. public Slider healthBar;
   }
 }
