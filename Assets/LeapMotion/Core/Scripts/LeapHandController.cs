@@ -376,7 +376,7 @@ namespace Leap.Unity
       }
       else
       {
-        Debug.Log("Right"+ System.Environment.TickCount);
+        //Debug.Log("Right"+ System.Environment.TickCount);
         totalCount = rtotalCount;
         prevType = rprevType;
         action = raction;

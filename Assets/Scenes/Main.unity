@@ -399,7 +399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shadow: {fileID: 214801853}
   speed: 0.1
-  isHandInput: 1
+  isHandInput: 0
 --- !u!50 &761949591
 Rigidbody2D:
   serializedVersion: 4
@@ -597,7 +597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shadow: {fileID: 595965071}
   speed: 0.1
-  isHandInput: 1
+  isHandInput: 0
 --- !u!212 &1246265834
 SpriteRenderer:
   m_ObjectHideFlags: 0

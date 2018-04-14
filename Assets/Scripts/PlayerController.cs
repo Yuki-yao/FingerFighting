@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour {
     }
     else if (at == ActionType.Backward)
     {
+      Debug.Log("Backward");
       animator.SetTrigger("backward");
       animator.SetBool("isIdle", false);
       Vector2 newpos = new Vector2(pos.x - speed, pos.y);
@@ -96,10 +97,19 @@ public class PlayerController : MonoBehaviour {
     {
       animator.SetBool("isIdle", true);
     }
+    checkAttack(at);
   }
 
   // Update is called once per frame
   void Update () {
-		
 	}
+
+  void checkAttack(ActionType at)
+  {
+    // TODO: 
+    // if (player1 and player2 collide and not on air)
+    //   if (player1 punch and player2 not (defend or squat))
+    //   or player1 kick
+    // player2 hp decreased
+  }
 }
