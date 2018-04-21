@@ -408,7 +408,7 @@ namespace Leap.Unity
 
       if (isJump(hand))
       {
-        Debug.Log("JUMP");
+        //Debug.Log("JUMP");
         if (check(GestureType.Jump, isLeftHand))
         {
           if (checkForward(isLeftHand))
@@ -503,6 +503,7 @@ namespace Leap.Unity
           {
             prevType = (int)GestureType.Punch;
             action = ActionType.Punch;
+            Debug.Log("PUNCH");
           }
           if (isLeftHand)
             laction = action;
@@ -557,7 +558,7 @@ namespace Leap.Unity
         return laction;
       else
       {
-        Debug.Log("              " + raction);
+        //Debug.Log("              " + raction);
         return raction;
       }
     }

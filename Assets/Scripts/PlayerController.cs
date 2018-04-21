@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using FingerInput;
 using UnityEngine;
 using Leap.Unity;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
 
   private Rigidbody2D body;
   private SpriteRenderer sRenderer;
   public GameObject shadow;
-  public GameObject otherPlayer;
+  public PlayerController otherPlayer;
+  public Slider HPBar;
   private IFingerInput input;
   private Animator animator;
   private float groundY;
@@ -17,6 +19,8 @@ public class PlayerController : MonoBehaviour {
   public bool isHandInput;
   private ActionType curAction;
   private int player;
+  private int hp;
+  private bool isAlive;
 
 	// Use this for initialization
 	void Start () {
@@ -43,16 +47,14 @@ public class PlayerController : MonoBehaviour {
     }
     input.SetHandController(GameObject.Find("LeapHandController").GetComponent<LeapHandController>());
     groundY = body.position.y;
+    hp = 100;
+    HPBar.value = HPBar.maxValue = hp;
+    isAlive = true;
 	}
 
-  private void OnCollisionStay2D(Collision2D collision)
-  {
-    Collider2D col = collision.collider;
-    if (col.name == otherPlayer.name)
-      checkAttack();
-  }
-
   void FixedUpdate() {
+    if (!isAlive)
+      return;
     Vector2 pos = body.position;
     ActionType at = input.GetAction();
     if (OnAir())
@@ -111,6 +113,8 @@ public class PlayerController : MonoBehaviour {
       animator.SetBool("isIdle", true);
     }
     curAction = at;
+    if (-2.0 < otherPlayer.body.position.x - pos.x && otherPlayer.body.position.x - pos.x < 2.0)
+      checkAttack();
   }
 
   // Update is called once per frame
@@ -126,6 +130,21 @@ public class PlayerController : MonoBehaviour {
   {
     if (body.position.y > groundY + 1e-4)
       return true;
+    return false;
+  }
+
+  public bool DecreaseHP()
+  {
+    if (player == 2)
+      Debug.Log("got hit");
+    if (hp <= 0) return false;
+    hp -= 1;
+    if (hp <= 0)
+    {
+      HPBar.value = 0;
+      return true;
+    }
+    HPBar.value = hp;
     return false;
   }
 
@@ -145,5 +164,18 @@ public class PlayerController : MonoBehaviour {
     // use otherPlayer.GetCurrentAction() to access another player's action
     // you can access health bar like "GameObject.Find("YOUR_HEALTH_BAR_NAME") or declare your own variables
     //   e.g. public Slider healthBar;
+    if(!this.OnAir() && !otherPlayer.OnAir())
+    {
+      ActionType otherAct = otherPlayer.GetCurrentAction();
+      if((otherAct == ActionType.Punch && curAction != ActionType.Defend && curAction != ActionType.Squat) || otherAct == ActionType.Kick)
+      {
+        if(DecreaseHP())
+        {
+          animator.SetBool("dead", true);
+          animator.SetBool("isIdle", false);
+          isAlive = false;
+        }
+      }
+    }
   }
 }
